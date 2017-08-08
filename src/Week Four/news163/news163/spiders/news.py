@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import scrapy
+from scrapy import Request
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from ..items import NewsItem
@@ -9,7 +9,9 @@ class NeteaseNewsSpider(CrawlSpider):
     name = 'netease'
     allowed_domains = ['news.163.com']
     start_urls = ['http://news.163.com']
-    rules = [Rule(LinkExtractor(allow=[r'(http://news\.163\.com)/(\d{2})/(\d{4})/\d+/(\w+)\.html']), 'parse_news')]
+    rules = [
+        Rule(LinkExtractor(allow=[r'(http://news\.163\.com)/(\d{2})/(\d{4})/\d+/(\w+)\.html']), 'parse_news'),
+    ]
 
     def parse_news(self, response):
 
@@ -25,14 +27,32 @@ class SinaNewsSpider(CrawlSpider):
     name = 'sina'
     allowed_domains = ['news.sina.com.cn']
     start_urls = ['http://news.sina.com.cn']
-    rules = [Rule(LinkExtractor(allow=[r'(http://(?:\w+\.)*news\.sina\.com\.cn)/.*/(\d{4}-\d{2}-\d{2})/\d{4}(\d{8})\.(?:s)html']), 'parse_news')]
+    rules = [
+        Rule(LinkExtractor(allow=[
+            r'http://news\.sina\.com\.cn/\w/w+\.html'
+            r'(http://(?:\w+\.)*news\.sina\.com\.cn)/\w+/\w+/(\d{4}-\d{2}-\d{2})/.*\.(?:s)html',
+            r'(http://(?:\w+\.)*news\.sina\.com\.cn)/\w+/(\d{4}-\d{2}-\d{2})/.*\.(?:s)html'
+        ]), 'parse_news'),
+        Rule(LinkExtractor(allow=[
+            r'(http://(?:\w+\.)*news\.sina\.com\.cn)/\w+/\w+/\w+/.*\.(?:s)html',
+            # r'(http://(?:\w+\.)*news\.sina\.com\.cn)/\w+/',
+            # r'(http://(?:\w+\.)*news\.sina\.com\.cn)'
+        ])),
+        # Rule(LinkExtractor(allow=[r'(http://(?:\w+\.)*news\.sina\.com\.cn).*']))
+    ]
 
     def parse_news(self, response):
         item = NewsItem()
         item['url'] = response.url
         item['source'] = 'sina'
+
         item['title'] = ''.join(response.xpath('//div[@class="page-header"]/h1/text()').extract())
+        if item['title'] == '':
+            item['title'] = ''.join(response.xpath('//th[@class="f24"]/font/h1/text()').extract())
+
         item['text'] = ' '.join(response.xpath('//div[@class="article article_16"]/p/text()').extract()).replace('\u3000', '')
+        if item['text'] == ' ':
+            item['text'] = ' '.join(response.xpath('//td[@class="l17"]/font/p/text()').extract()).replace('\u3000', '')
         yield item
 
 
@@ -52,7 +72,10 @@ class TencentNewsSpider(CrawlSpider):
         'http://ly.qq.com/',
         'http://news.qq.com/zt2015/wxghz/index.htm'
     ]
-    rules = [Rule(LinkExtractor(allow=[r'(.*)/a/(\d{8})/(\d+)\.htm']), 'parse_news')]
+    rules = [
+        Rule(LinkExtractor(allow=[r'(.*)/a/(\d{8})/(\d+)\.htm']), 'parse_news'),
+        # Rule(LinkExtractor(allow=[r'']))
+    ]
 
     def parse_news(self, response):
         item = NewsItem()

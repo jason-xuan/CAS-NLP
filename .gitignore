@@ -1,2 +1,5 @@
 *.pyc
 *.dat
+src/Day Three/.ipynb_checkpoints/*
+*.json
+src/Week Four/news163/crawls/*

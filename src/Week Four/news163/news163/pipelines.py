@@ -7,8 +7,19 @@
 import json
 import csv
 from scrapy import signals
+from scrapy.exceptions import DropItem
 
-class News163CSVPipeline(object):
+
+class DropItemPipeline(object):
+
+    def process_item(self, item, spider):
+        if item['title'] == '':
+            raise DropItem("Duplicate item found: %s" % item)
+        if item['text'] == ' ':
+            raise DropItem("Duplicate item found: %s" % item)
+        return item
+
+class News163JsonPipeline(object):
     def __init__(self):
         self.files = {}
 
@@ -39,3 +50,4 @@ class News163CSVPipeline(object):
         self.file.write(json.dumps(j))
         self.file.write('\n')
         return item
+
