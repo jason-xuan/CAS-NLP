@@ -8,11 +8,14 @@
 import scrapy
 
 
-class News163Item(scrapy.Item):
+class NewsItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     url = scrapy.Field()
+    source = scrapy.Field()
     title = scrapy.Field()
     text = scrapy.Field()
 
+    def __str__(self):
+        return '<Item {0}>'.format(self['title'])
 

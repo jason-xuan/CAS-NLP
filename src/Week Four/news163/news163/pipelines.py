@@ -4,9 +4,9 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
+import json
 import csv
 from scrapy import signals
-from scrapy.exporters import JsonLinesItemExporter
 
 class News163CSVPipeline(object):
     def __init__(self):
@@ -20,16 +20,22 @@ class News163CSVPipeline(object):
          return pipeline
 
     def spider_opened(self, spider):
-        file = open('%s_products.json' % spider.name, 'w+b')
-        self.files[spider] = file
-        self.exporter = JsonLinesItemExporter(file)
-        self.exporter.start_exporting()
+        # fieldnames = ['url', 'title', 'text']
+        self.file = open('%s_products.json' % spider.name, 'w', encoding='utf-8')
+        # self.csv = csv.DictWriter(self.file, fieldnames=fieldnames)
+        # self.csv.writeheader()
 
     def spider_closed(self, spider):
-        self.exporter.finish_exporting()
-        file = self.files.pop(spider)
-        file.close()
+        self.file.close()
 
     def process_item(self, item, spider):
-        self.exporter.export_item(item)
+        item['text'] = item['text'].replace('\n', ' ')
+        j = {
+            'url': item['url'],
+            'source': item['source'],
+            'title': item['title'],
+            'text': item['text']
+        }
+        self.file.write(json.dumps(j))
+        self.file.write('\n')
         return item
