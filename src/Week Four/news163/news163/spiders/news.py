@@ -26,7 +26,15 @@ class NeteaseNewsSpider(CrawlSpider):
 class SinaNewsSpider(CrawlSpider):
     name = 'sina'
     allowed_domains = ['news.sina.com.cn']
-    start_urls = ['http://news.sina.com.cn']
+    start_urls = [
+        'http://news.sina.com.cn',
+        'http://news.sina.com.cn/china/',
+        'http://news.sina.com.cn/world/',
+        'http://news.sina.com.cn/society/',
+        'http://mil.news.sina.com.cn/',
+        'http://news.sina.com.cn/opinion/',
+        'http://news.sina.com.cn/zt/',
+    ]
     rules = [
         Rule(LinkExtractor(allow=[
             r'http://news\.sina\.com\.cn/\w/w+\.html'
@@ -35,8 +43,9 @@ class SinaNewsSpider(CrawlSpider):
         ]), 'parse_news'),
         Rule(LinkExtractor(allow=[
             r'(http://(?:\w+\.)*news\.sina\.com\.cn)/\w+/\w+/\w+/.*\.(?:s)html',
-            # r'(http://(?:\w+\.)*news\.sina\.com\.cn)/\w+/',
-            # r'(http://(?:\w+\.)*news\.sina\.com\.cn)'
+            r'(http://(?:\w+\.)*news\.sina\.com\.cn)/\w+/\w+/$',
+            r'(http://(?:\w+\.)*news\.sina\.com\.cn)/\w+/$',
+            r'(http://(?:\w+\.)*news\.sina\.com\.cn)$'
         ])),
         # Rule(LinkExtractor(allow=[r'(http://(?:\w+\.)*news\.sina\.com\.cn).*']))
     ]
@@ -47,12 +56,22 @@ class SinaNewsSpider(CrawlSpider):
         item['source'] = 'sina'
 
         item['title'] = ''.join(response.xpath('//div[@class="page-header"]/h1/text()').extract())
+
         if item['title'] == '':
             item['title'] = ''.join(response.xpath('//th[@class="f24"]/font/h1/text()').extract())
 
+        if item['title'] == '':
+            item['title'] = ''.join(response.xpath('//h1[@id="artibodyTitle"]/text()').extract())
+
+
         item['text'] = ' '.join(response.xpath('//div[@class="article article_16"]/p/text()').extract()).replace('\u3000', '')
+
         if item['text'] == ' ':
             item['text'] = ' '.join(response.xpath('//td[@class="l17"]/font/p/text()').extract()).replace('\u3000', '')
+
+        if item['text'] == ' ':
+            item['text'] = ' '.join(response.xpath('//div[@id="artibody"]/p/text()').extract()).replace('\u3000', '')
+
         yield item
 
 
@@ -84,3 +103,7 @@ class TencentNewsSpider(CrawlSpider):
         item['title'] = ''.join(response.xpath('//div[@class="hd"]/h1/text()').extract())
         item['text'] = ' '.join(response.xpath('//div[@class="bd"]/div/p/text()').extract())
         yield item
+
+
+
+

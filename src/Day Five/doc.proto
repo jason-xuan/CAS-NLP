@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package document;
+
+
+message Document {
+    string docno = 1;
+
+    string url = 2;
+
+    string title = 3;
+
+    string content = 4;
+
+    string source = 5;
+
+    repeated string tokens = 6;
+}
+
+
+
+message Dictionary {
+    message Topic2Doc
+    {
+        message DocWithProba
+        {
+            // represents the doc, which is the key for searching doc in lmdb
+            string url = 1;
+            // the probability of if a doc is related to the topic
+            double proba = 2;
+        }
+
+        int32 topic_code = 1;
+        // key: rank
+        // value: DocWithProba
+        map<int32, DocWithProba> docs = 2;
+    }
+
+    message Word2Topic
+    {
+        message TopicWithProba
+        {
+            // represents the topic, which is the key for searching topic in lmdb
+            int32 topic_code = 1;
+            // the probability of if a topic is related to the word
+            double proba = 2;
+        }
+        // following word
+        string word = 1;
+        // key: rank
+        // value: TopicWithProba
+        map<int32, TopicWithProba> topics = 2;
+    }
+    // key: topic
+    // value: Topic2Doc
+    map<int32, Topic2Doc> topic2doc = 1;
+    // key: word
+    // value: Word2Topic
+    map<string, Word2Topic> word2topic = 2;
+}

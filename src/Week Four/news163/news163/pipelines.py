@@ -6,6 +6,7 @@
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import json
 import csv
+from datetime import datetime
 from scrapy import signals
 from scrapy.exceptions import DropItem
 
@@ -32,7 +33,7 @@ class News163JsonPipeline(object):
 
     def spider_opened(self, spider):
         # fieldnames = ['url', 'title', 'text']
-        self.file = open('%s_products.json' % spider.name, 'w', encoding='utf-8')
+        self.file = open('%s_%s_products.json' % (spider.name, str(datetime.now()).replace(':', '-')), 'w', encoding='utf-8')
         # self.csv = csv.DictWriter(self.file, fieldnames=fieldnames)
         # self.csv.writeheader()
 

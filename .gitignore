@@ -3,3 +3,16 @@
 src/Day Three/.ipynb_checkpoints/*
 *.json
 src/Week Four/news163/crawls/*
+*.pickle
+*.pickle
+*.pptx
+src/Week Three/.ipynb_checkpoints/word2vec-checkpoint.ipynb
+*.state
+*.seen
+*.txt
+*.mdb
+*.dump
+*.npy
+src/Day Four/.ipynb_checkpoints/*
+src/Day Five/.ipynb_checkpoints/*
+*.model
