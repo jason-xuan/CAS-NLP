@@ -11,7 +11,7 @@
 *.dump
 *.npy
 *.model
-
+*.buf
 
 src/*/.ipynb_checkpoints/*
 src/*/.ipynb_checkpoints/*
